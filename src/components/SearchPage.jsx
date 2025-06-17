@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import useQueryStore from "@/store/useQueryStore"
 import { mockResults } from "@/app/mocks/data"
+import { queryHybrid } from "@/lib/query"
 
 
 export default function SearchPage() {
@@ -16,7 +17,7 @@ export default function SearchPage() {
   const [results, setResults] = useState([])
   const [expandedQuestions, setExpandedQuestions] = useState({})
 
-  console.log("userQuery:",userQuery)
+  //console.log("userQuery:",userQuery)
 
   const toggleQuestion = (index) => {
     setExpandedQuestions(prev => ({
@@ -31,12 +32,28 @@ export default function SearchPage() {
     setIsSearching(true)
     setHasSearched(true)
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Set mock results
-    setResults(mockResults)
-    setIsSearching(false)
+    try {
+      console.log("searching for:", searchQuery)
+      const results = await queryHybrid(searchQuery)
+      console.log('✅ RAG Response:', results)
+      
+      // Ensure results is an array
+      if (Array.isArray(results)) {
+        setResults(results)
+      } else if (results && typeof results === 'object') {
+        // If it's a single result object, wrap it in an array
+        setResults([results])
+      } else {
+        // If results is invalid, set empty array
+        console.error('Invalid results format:', results)
+        setResults([])
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+      setResults([])
+    } finally {
+      setIsSearching(false)
+    }
   }
 
   const handleSubmit = (e) => {
