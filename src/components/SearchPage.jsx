@@ -61,7 +61,13 @@ export default function SearchPage() {
     console.log("handleSubmit")
     console.log("userQuery:",userQuery)
 
+    // toggle on below if production results are needed 
+
     handleSearch(userQuery)
+
+    // toggle on below if mock results are needed 
+/*     setResults(mockResults)
+    setHasSearched(true) */
   }
 
   useEffect(() => {
