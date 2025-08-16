@@ -8,10 +8,12 @@ import { Card } from "@/components/ui/card"
 import useQueryStore from "@/store/useQueryStore"
 import { mockResults } from "@/app/mocks/data"
 import { queryHybrid } from "@/lib/query"
+import PdfModal from "@/components/PdfModal"
+import { getPdfUrlFromMeta } from "@/lib/pdf-url"
 
 // Toggle between mock and production results
 // Set to true for mock results(means its in development mode), false for production results
-const DEVELOPMENT_MODE = false
+const DEVELOPMENT_MODE = true
 
 export default function SearchPage() {
   const { userQuery, setUserQuery, clearUserQuery } = useQueryStore()
@@ -19,6 +21,14 @@ export default function SearchPage() {
   const [hasSearched, setHasSearched] = useState(false)
   const [results, setResults] = useState([])
   const [expandedQuestions, setExpandedQuestions] = useState({})
+  const [pdfViewer, setPdfViewer] = useState({
+    open: false,
+    url: null,
+    page: 1,
+    title: undefined,
+    pagesHint: [],
+    highlights: [],
+  })
 
   //console.log("userQuery:",userQuery)
 
@@ -26,6 +36,30 @@ export default function SearchPage() {
     setExpandedQuestions(prev => ({
       ...prev,
       [index]: !prev[index]
+    }))
+  }
+
+  const openPdf = (url, page, title, pagesHint = [], highlights = []) =>
+    setPdfViewer({ open: true, url, page, title, pagesHint, highlights })
+  const closePdf = () => setPdfViewer((p) => ({ ...p, open: false }))
+
+  // group retrieved_texts by file
+  const groupByFile = (retrieved_texts = []) => {
+    const byFile = {}
+    for (const t of retrieved_texts) {
+      const meta = t.metadata || {}
+      const url = getPdfUrlFromMeta(meta)
+      const name = meta.file_name || url || "unknown.pdf"
+      const page = parseInt(meta.page_label, 10) || 1
+      if (!url) continue
+      if (!byFile[name]) byFile[name] = { url, pages: new Set(), meta }
+      byFile[name].pages.add(page)
+    }
+    return Object.entries(byFile).map(([fileName, v]) => ({
+      fileName,
+      url: v.url,
+      pages: Array.from(v.pages).sort((a, b) => a - b),
+      meta: v.meta,
     }))
   }
 
@@ -265,36 +299,97 @@ export default function SearchPage() {
                                   <>
                                     <p className="text-gray-700 text-sm leading-relaxed">{subquestion.response}</p>
                                     {subquestion.retrieved_texts && (
-                                      <div className="mt-4">
+                                      <div className="mt-4 space-y-4">
+                                        {/* File-level sources */}
+                                        {(() => {
+                                          const groups = groupByFile(subquestion.retrieved_texts)
+                                          if (!groups.length) return null
+                                          return (
+                                            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                                              <div className="text-xs font-medium text-blue-900 mb-2">Sources (PDF)</div>
+                                              <div className="flex flex-wrap gap-2">
+                                                {groups.map((g, gi) => {
+                                                  // collect all snippets for this file -> [{page, text}]
+                                                  const fileHighlights = (subquestion.retrieved_texts || [])
+                                                    .filter(t => {
+                                                      const meta = t.metadata || {}
+                                                      const url = getPdfUrlFromMeta(meta)
+                                                      return url === g.url // same file
+                                                    })
+                                                    .map(t => ({
+                                                      page: parseInt(t.metadata?.page_label, 10) || 1,
+                                                      text: t.text || ""
+                                                    }))
+
+                                                  return (
+                                                    <button
+                                                      key={gi}
+                                                      onClick={() =>
+                                                        openPdf(
+                                                          g.url,
+                                                          g.pages[0] || 1,
+                                                          `${g.fileName}`,
+                                                          g.pages,
+                                                          fileHighlights // NEW
+                                                        )
+                                                      }
+                                                      className="text-sm border border-blue-200 text-blue-700 hover:bg-blue-100 px-3 py-1 rounded-full"
+                                                    >
+                                                      {g.fileName} · p. {g.pages.join(", ")}
+                                                    </button>
+                                                  )
+                                                })}
+                                              </div>
+                                            </div>
+                                          )
+                                        })()}
+
+                                        {/* Your existing source texts toggle */}
                                         <button
                                           onClick={() => toggleQuestion(`texts-${subIndex}`)}
                                           className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm mb-2"
                                         >
                                           {expandedQuestions[`texts-${subIndex}`] ? (
-                                            <>
-                                              Hide source texts <ChevronUp className="w-4 h-4" />
-                                            </>
+                                            <>Hide source texts <ChevronUp className="w-4 h-4" /></>
                                           ) : (
-                                            <>
-                                              Show source texts <ChevronDown className="w-4 h-4" />
-                                            </>
+                                            <>Show source texts <ChevronDown className="w-4 h-4" /></>
                                           )}
                                         </button>
+
                                         {expandedQuestions[`texts-${subIndex}`] && (
                                           <div className="space-y-3">
-                                            {subquestion.retrieved_texts.map((text, textIndex) => (
-                                              <div key={textIndex} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                                <div className="text-xs text-gray-500 mb-1">
-                                                  {text.metadata?.file_name && (
-                                                    <span className="font-medium">Source: {text.metadata.file_name}</span>
-                                                  )}
-                                                  {text.metadata?.page_label && (
-                                                    <span className="ml-2">Page: {text.metadata.page_label}</span>
-                                                  )}
+                                            {subquestion.retrieved_texts.map((text, textIndex) => {
+                                              const meta = text.metadata || {}
+                                              const url = getPdfUrlFromMeta(meta)
+                                              const page = parseInt(meta.page_label, 10) || 1
+                                              return (
+                                                <div key={textIndex} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                                  <div className="flex items-center justify-between mb-1">
+                                                    <div className="text-xs text-gray-500">
+                                                      {meta?.file_name && <span className="font-medium">Source: {meta.file_name}</span>}
+                                                      {meta?.page_label && <span className="ml-2">Page: {meta.page_label}</span>}
+                                                    </div>
+                                                    {url && (
+                                                      <button
+                                                        onClick={() =>
+                                                          openPdf(
+                                                            url,
+                                                            page,
+                                                            meta.file_name || "Source PDF",
+                                                            [],
+                                                            [{ page, text: text.text }] // <- single highlight
+                                                          )
+                                                        }
+                                                        className="text-xs px-2 py-1 border rounded hover:bg-gray-100"
+                                                      >
+                                                        View PDF (p. {page})
+                                                      </button>
+                                                    )}
+                                                  </div>
+                                                  <p className="text-gray-700 text-sm whitespace-pre-wrap">{text.text}</p>
                                                 </div>
-                                                <p className="text-gray-700 text-sm whitespace-pre-wrap">{text.text}</p>
-                                              </div>
-                                            ))}
+                                              )
+                                            })}
                                           </div>
                                         )}
                                       </div>
@@ -322,6 +417,16 @@ export default function SearchPage() {
           )}
         </div>
       </main>
+
+      <PdfModal
+        isOpen={pdfViewer.open}
+        onClose={closePdf}
+        pdfUrl={pdfViewer.url || ""}
+        initialPage={pdfViewer.page}
+        title={pdfViewer.title}
+        pagesHint={pdfViewer.pagesHint}
+        highlights={pdfViewer.highlights}
+      />
     </div>
   )
 } 
