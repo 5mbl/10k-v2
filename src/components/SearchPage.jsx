@@ -9,6 +9,9 @@ import useQueryStore from "@/store/useQueryStore"
 import { mockResults } from "@/app/mocks/data"
 import { queryHybrid } from "@/lib/query"
 
+// Toggle between mock and production results
+// Set to true for mock results(means its in development mode), false for production results
+const DEVELOPMENT_MODE = false
 
 export default function SearchPage() {
   const { userQuery, setUserQuery, clearUserQuery } = useQueryStore()
@@ -61,13 +64,14 @@ export default function SearchPage() {
     console.log("handleSubmit")
     console.log("userQuery:",userQuery)
 
-    // toggle on below if production results are needed 
-
-    handleSearch(userQuery)
-
-    // toggle on below if mock results are needed 
-/*     setResults(mockResults)
-    setHasSearched(true) */
+    if (DEVELOPMENT_MODE) {
+      // Use mock results
+      setResults(mockResults)
+      setHasSearched(true)
+    } else {
+      // Use production results
+      handleSearch(userQuery)
+    }
   }
 
   useEffect(() => {
