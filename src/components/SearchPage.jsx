@@ -13,7 +13,7 @@ import { getPdfUrlFromMeta } from "@/lib/pdf-url"
 
 // Toggle between mock and production results
 // Set to true for mock results(means its in development mode), false for production results
-const DEVELOPMENT_MODE = true
+const DEVELOPMENT_MODE = false
 
 export default function SearchPage() {
   const { userQuery, setUserQuery, clearUserQuery } = useQueryStore()

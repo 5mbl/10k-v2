@@ -5,6 +5,8 @@ import axios from 'axios';
 // production: const API_BASE_URL = "https://one0k-v2-api.onrender.com/api";
 
 const API_BASE_URL = "https://one0k-v2-api.onrender.com/api";
+//const API_BASE_URL_LOCAL = "http://localhost:8000/api";
+
 
 
 export const queryHybrid = async (query) => {
