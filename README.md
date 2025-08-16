@@ -1,3 +1,33 @@
+
+## What the App Does
+
+This project is a **semantic search system for SEC 10-K filings**.
+
+It allows financial analysts, investors, and researchers to ask natural language questions about company reports, whether narrative ones like *“What risks did Microsoft mention in 2022?”* or factual ones like *“What was Microsoft’s revenue in 2022?”*.
+
+Unlike traditional systems, it **classifies each query by intent**:
+- **Qualitative queries** → semantic search over 10-K documents  
+- **Quantitative queries** → structured financial database for exact numbers  
+
+The system then combines results into clear, context-aware answers while always showing the sources for **trust and transparency**.
+
+In short: a **hybrid search tool** that adapts to the type of financial question asked.
+
+## Supported Companies & Years
+
+The prototype currently supports **7 major tech companies** from **2020 – 2024**:
+
+
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Alphabet" height="40" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" height="40" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg" alt="Meta" height="40" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" height="40" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" height="40" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/NVIDIA_logo.svg" alt="Nvidia" height="40" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg" alt="Tesla" height="40" />
+</p>
+
 ## **Start FastAPI Server** 
 
 ### Development:
