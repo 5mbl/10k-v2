@@ -82,6 +82,9 @@ Expected Response:
 cd frontend  
 npm run dev    
 ```   
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/d0f3b0eb-1512-40ba-b7fb-c8ebf643937f" width="48%" />
+  <img src="https://github.com/user-attachments/assets/48b49d8e-dfb8-4feb-8cf6-c3a51cf91ea3" width="48%" />
+</p>
 
 
-![image](https://github.com/user-attachments/assets/d0f3b0eb-1512-40ba-b7fb-c8ebf643937f)
