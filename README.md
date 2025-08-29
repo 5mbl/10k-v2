@@ -59,7 +59,23 @@ Expected Response:
   "message": "Welcome to the SEC-RAG-API"
 }
 
+## Tech Stack
 
+- **Frontend**: React / Next.js  
+- **Language Model**: [OpenAI](https://openai.com/) GPT (embeddings + generation)  
+- **Vector Database**: [Pinecone](https://www.pinecone.io/)  
+- **Financial Data**:  [Polygon API](https://polygon.io/)  
+<br><br>
+
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" height="30" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Next.js_wordmark.svg" alt="Next.js" height="30" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/OpenAI_logo_2025_%28wordmark%29.svg" alt="OpenAI" height="30" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://static.cdnlogo.com/logos/p/46/pinecone.svg" alt="Pinecone" height="30" /> &nbsp;&nbsp;&nbsp;
+  <img src="https://github.com/user-attachments/assets/101f097d-1e5c-41e3-b1ae-b09e890fb652" alt="Polygon" height="30" />
+</p>
+
+---
 
 ## **Start Frontend**  
 ```bash
