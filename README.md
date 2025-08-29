@@ -87,4 +87,7 @@ npm run dev
   <img src="https://github.com/user-attachments/assets/48b49d8e-dfb8-4feb-8cf6-c3a51cf91ea3" width="48%" />
 </p>
 
+---
+
+Developed as part of my bachelor thesis in Business Informatics at HWR Berlin. 
 
